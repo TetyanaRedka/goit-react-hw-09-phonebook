@@ -1,0 +1,19 @@
+.userMenuNav {
+  display: flex;
+  align-items: center;
+}
+
+.navLink {
+  padding: 5px 15px;
+  margin: 10px;
+  color: rgb(80, 5, 155);
+  font-weight: bold;
+
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+}
+
+.welcomeText {
+  margin-bottom: 0;
+  font-style: italic;
+}

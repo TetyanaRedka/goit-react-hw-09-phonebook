@@ -1,0 +1,30 @@
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  background-color: rgb(161, 167, 194);
+  border: 1px solid dimgrey;
+}
+
+.navList {
+  display: flex;
+  margin: 0;
+}
+
+.link {
+  list-style: none;
+  margin: 10px;
+}
+
+.navLink {
+  padding: 5px 15px;
+  margin: 10px;
+  color: rgb(80, 5, 155);
+  font-weight: bold;
+
+  background-color: rgb(255, 255, 255);
+  border-radius: 5px;
+}
+
+.navLinkActive {
+  color: rgb(182, 52, 63);
+}
