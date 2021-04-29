@@ -12,7 +12,7 @@ import {
   deleteContactError,
 } from './contactActions';
 
-const fetchContacts = () => dispatch => {
+export const fetchContacts = () => dispatch => {
   dispatch(fetchContactsRequest());
 
   return axios
@@ -21,7 +21,7 @@ const fetchContacts = () => dispatch => {
     .catch(error => dispatch(fetchContactsError(error.message)));
 };
 
-const addContact = contact => dispatch => {
+export const addContact = contact => dispatch => {
   dispatch(addContactRequest());
 
   return axios
@@ -30,7 +30,7 @@ const addContact = contact => dispatch => {
     .catch(error => dispatch(addContactError(error.message)));
 };
 
-const deleteContacts = contactId => dispatch => {
+export const deleteContacts = contactId => dispatch => {
   dispatch(deleteContactRequest());
 
   return axios
@@ -38,5 +38,3 @@ const deleteContacts = contactId => dispatch => {
     .then(() => dispatch(deleteContactSuccess(contactId)))
     .catch(error => dispatch(deleteContactError(error.message)));
 };
-
-export default { addContact, deleteContacts, fetchContacts };

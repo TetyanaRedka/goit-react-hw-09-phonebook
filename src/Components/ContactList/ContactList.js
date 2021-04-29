@@ -1,55 +1,35 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React, { useEffect, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import contactOperations from '../../redux/contact/contactOperations';
-import styles from './ContactList.module.css';
+import { deleteContacts, fetchContacts } from '../../redux/contact/contactOperations';
 import { getLoading, getVisibleContacts } from '../../redux/contact/contactSelectors';
+import styles from './ContactList.module.css';
 
-class ContactList extends Component {
-  componentDidMount() {
-    this.props.getContacts();
-  }
+export default function ContactList() {
+  const dispatch = useDispatch();
+  const deleteContact = useCallback(id => dispatch(deleteContacts(id)), [dispatch]);
 
-  render() {
-    return (
-      <>
-        {this.props.loading && <h1>...</h1>}
-        <ul>
-          {this.props.contacts.length > 0 &&
-            this.props.contacts.map(({ id, name, number }) => (
-              <li key={id}>
-                {name}: {number}
-                <button className={styles.deletebtn} onClick={() => this.props.deleteContact(id)}>
-                  удалить
-                </button>
-              </li>
-            ))}
-        </ul>
-      </>
-    );
-  }
+  const contacts = useSelector(getVisibleContacts);
+  const loading = useSelector(getLoading);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  return (
+    <>
+      {loading && <h1>...</h1>}
+      <ul>
+        {contacts.length > 0 &&
+          contacts.map(({ id, name, number }) => (
+            <li key={id}>
+              {name}: {number}
+              <button className={styles.deletebtn} onClick={() => deleteContact(id)}>
+                удалить
+              </button>
+            </li>
+          ))}
+      </ul>
+    </>
+  );
 }
-
-ContactList.propTypes = {
-  contacts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      name: PropTypes.string.isRequired,
-      number: PropTypes.string.isRequired,
-    }),
-  ),
-  deleteContact: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = state => ({
-  contacts: getVisibleContacts(state),
-  loading: getLoading(state),
-});
-
-const mapDispatchToProps = dispatch => ({
-  deleteContact: id => dispatch(contactOperations.deleteContacts(id)),
-  getContacts: () => dispatch(contactOperations.fetchContacts()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactList);

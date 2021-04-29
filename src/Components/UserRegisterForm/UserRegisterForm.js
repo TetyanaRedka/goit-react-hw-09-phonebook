@@ -1,68 +1,73 @@
-import React, { Component } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
-import { connect } from 'react-redux';
-
-import userOperations from '../../redux/userAuth/userOperations';
+import { registerUser, loginUser } from '../../redux/userAuth/userOperations';
 import styles from '../ContactForm/ContactForm.module.css';
 
-export class UserRegisterForm extends Component {
-  state = {
-    name: '',
-    email: '',
-    password: '',
+export default function UserRegisterForm() {
+  const dispatch = useDispatch();
+  const location = useLocation();
+
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleChange = e => {
+    const { name, value } = e.target;
+    if (name === 'name') setName(value);
+    if (name === 'email') setEmail(value);
+    if (name === 'password') setPassword(value);
   };
 
-  handleChange = ({ target }) => {
-    this.setState({ [target.name]: target.value });
+  const ifRegisterForm = useCallback(() => {
+    return location.pathname === '/registration';
+  }, [location.pathname]);
+
+  const handleSubmit = useCallback(
+    e => {
+      e.preventDefault();
+
+      ifRegisterForm()
+        ? dispatch(registerUser({ name, email, password }))
+        : dispatch(
+            loginUser({
+              email,
+              password,
+            }),
+          );
+
+      reset();
+    },
+    [dispatch, ifRegisterForm, email, name, password],
+  );
+
+  const reset = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
   };
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.ifRegisterForm()
-      ? this.props.onRegisterUser(this.state)
-      : this.props.onLoginUser({
-          email: this.state.email,
-          password: this.state.password,
-        });
-
-    this.setState({ name: '', email: '', password: '' });
-  };
-
-  ifRegisterForm = () => {
-    return this.props.location.pathname === '/registration';
-  };
-
-  render() {
-    const { name, email, password } = this.state;
-
-    return (
-      <>
-        {this.ifRegisterForm() ? <div> REGISTRATION </div> : <div> LOGIN </div>}
-        <form onSubmit={this.handleSubmit} className={styles.formStyle}>
-          {this.ifRegisterForm() && (
-            <label className={styles.pointStyle}>
-              Name:
-              <input type="text" name="name" value={name} onChange={this.handleChange} className={styles.input} />
-            </label>
-          )}
+  return (
+    <>
+      {ifRegisterForm() ? <div> REGISTRATION </div> : <div> LOGIN </div>}
+      <form onSubmit={handleSubmit} className={styles.formStyle}>
+        {ifRegisterForm() && (
           <label className={styles.pointStyle}>
-            Email:
-            <input type="email" name="email" value={email} onChange={this.handleChange} className={styles.input} />
+            Name:
+            <input type="text" name="name" value={name} onChange={handleChange} className={styles.input} />
           </label>
-          <label className={styles.pointStyle}>
-            Password:
-            <input type="password" name="password" value={password} onChange={this.handleChange} className={styles.input} />
-          </label>
-          <button type="submit">{this.ifRegisterForm() ? 'Registration' : 'Login'}</button>
-        </form>
-      </>
-    );
-  }
+        )}
+        <label className={styles.pointStyle}>
+          Email:
+          <input type="email" name="email" value={email} onChange={handleChange} className={styles.input} />
+        </label>
+        <label className={styles.pointStyle}>
+          Password:
+          <input type="password" name="password" value={password} onChange={handleChange} className={styles.input} />
+        </label>
+        <button type="submit">{ifRegisterForm() ? 'Registration' : 'Login'}</button>
+      </form>
+    </>
+  );
 }
-
-const mapDispatchToProps = dispatch => ({
-  onRegisterUser: data => dispatch(userOperations.registerUser(data)),
-  onLoginUser: data => dispatch(userOperations.loginUser(data)),
-});
-
-export default connect(null, mapDispatchToProps)(UserRegisterForm);
